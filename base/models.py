@@ -67,8 +67,8 @@ class Message(models.Model):
         return self.body[0:50]
     
 class Follow(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_is_following")
-    user_follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_is_being_followed")
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="user_who_is_following")
+    user_follower = models.ForeignKey(User, on_delete=models.CASCADE,related_name="user_who_is_being_following")
 
     def __str__(self):
         return f"{self.user} is following {self.user_follower}"

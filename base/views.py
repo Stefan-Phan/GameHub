@@ -4,10 +4,10 @@ from django.db.models import Q
 from .models import Room, Topic, Message, User, Follow
 from .forms import RoomForm, UserForm, MyUserCreationForm
 
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
 from django.contrib.auth.decorators import login_required
+
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -122,39 +122,50 @@ def userProfile(request, pk):
     rooms = user.room_set.all()
     room_messages = user.message_set.all().order_by('-created')[:5]
     topics = Topic.objects.all()
+   
 
     following = Follow.objects.filter(user=user)
-    followers = Follow.objects.filter(user_follower = user)
+    followers = Follow.objects.filter(user_follower=user)
 
-    try:
-        checkFollow = followers.filter(user=User.objects.get(pk=request.user.id))
-        if len(checkFollow) != 0:
-            isFollowing = True
-        else:
+    isFollowing = None
+    if request.user.id != user.id:
+        try:
+            checkFollow = followers.filter(user=User.objects.get(pk=request.user.id))
+            if len(checkFollow) != 0:
+                isFollowing = True
+            else:
+                isFollowing = False
+        except:
             isFollowing = False
-    except:
-        isFollowing = False       
-
-    context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics, 'following': following, 'followers': followers, 'isFollowing': isFollowing, 'user_profile': user}
+    
+    context = {
+        'user': user,
+        'rooms': rooms, 
+        'room_messages': room_messages,
+        'topics': topics,
+        "following": following,
+        "followers": followers,
+        "isFollowing": isFollowing,
+    }
     return render(request, 'base/profile.html', context)
 
 def follow(request):
     userfollow = request.POST['userfollow']
     currentUser = User.objects.get(pk=request.user.id)
-    userfollowData = User.objects.get(id=userfollow)
+    userfollowData = User.objects.get(username=userfollow)
     f = Follow(user=currentUser, user_follower=userfollowData)
     f.save()
     user_id = userfollowData.id
-    return HttpResponseRedirect(reverse('userProfile', kwargs={'pk': user_id}))
+    return HttpResponseRedirect(reverse("user-profile", kwargs={'pk': user_id}))
 
 def unfollow(request):
     userfollow = request.POST['userfollow']
     currentUser = User.objects.get(pk=request.user.id)
-    userfollowData = User.objects.get(id=userfollow)
+    userfollowData = User.objects.get(username=userfollow)
     f = Follow.objects.get(user=currentUser, user_follower=userfollowData)
     f.delete()
     user_id = userfollowData.id
-    return HttpResponseRedirect(reverse('userProfile', kwargs={'pk': user_id}))
+    return HttpResponseRedirect(reverse("user-profile", kwargs={'pk': user_id}))
 
 @login_required(login_url='login')
 def createRoom(request):

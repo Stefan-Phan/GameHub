@@ -1208,3 +1208,23 @@ a {
   background-color: rgb(87, 87, 87);
   transition-delay:0.1s;
 }
+
+.follow_container .follow-button {
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 1.5rem;
+  background-color: var(--color-dark-medium);
+  border-radius: 5rem;
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.follow_container .follow-button:hover {
+  background-color: rgb(87, 87, 87);
+  transition-delay:0.1s;
+}
