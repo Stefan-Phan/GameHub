@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="layout__body">
-        <h2 class="auth__tagline">Find your study partner</h2>
+        <h2 class="auth__tagline">Find your friends</h2>
 
         <form class="form" action="#" method="POST">
           {% csrf_token %}
@@ -57,16 +57,20 @@
         </div>
       </div>
       <div class="layout__body">
-        <h2 class="auth__tagline">Find your study partner</h2>
+        <h2 class="auth__tagline">Find your friends</h2>
 
-        <form class="form" action="#" method="POST">
+        <form class="form" action="{% url 'register' %}" method="POST">
           {% csrf_token %}
           
-
           {% for field in form%}
           <div class="form__group form__group">
             <label for="room_name">{{field.label}}</label>
             {{field}}
+            {% if field.errors %}
+                <div class="form__error">
+                    {{ field.errors }}
+                </div>
+            {% endif %}
           </div>
           {% endfor %}
 
@@ -81,7 +85,6 @@
                 d="M15 21.694v4.306h2v-4.306c0.587-0.348 1-0.961 1-1.694 0-1.105-0.895-2-2-2s-2 0.895-2 2c0 0.732 0.413 1.345 1 1.694z">
               </path>
             </svg>
-
             Register
           </button>
         </form>

@@ -129,8 +129,11 @@ a {
   border: none;
   outline: none;
   cursor: pointer;
+  color: green;
 }
 
+
+/*--------------------------------- Small active button next to the avatar ------------------*/
 .avatar {
   position: relative;
   display: inline-block;
@@ -164,12 +167,12 @@ a {
   height: 2.8rem;
 }
 
-.avatar.avatar--small:after {
+/* .avatar.avatar--small:after {
   width: 0.7rem;
   height: 0.7rem;
   bottom: 0px;
   right: -6px;
-}
+} */
 
 .avatar.avatar--medium img {
   width: 3.6rem;
@@ -177,12 +180,12 @@ a {
   border-radius: 50%;
 }
 
-.avatar.avatar--medium:after {
+/* .avatar.avatar--medium:after {
   width: 0.7rem;
   height: 0.7rem;
   bottom: 0px;
   right: -6px;
-}
+} */
 
 .avatar.avatar--large img {
   display: block;
@@ -191,12 +194,12 @@ a {
   border-radius: 50%;
 }
 
-.avatar.avatar--large:after {
+/* .avatar.avatar--large:after {
   width: 1rem;
   height: 1rem;
   bottom: 2px;
   right: 3.5px;
-}
+} */
 
 .scroll::-webkit-scrollbar {
   width: 0.6rem;
@@ -1169,4 +1172,39 @@ a {
   font-weight: 500;
   color: var(--color-main);
   font-weight: 1.4rem;
+}
+
+.default-avatar-image img {
+  border-radius: 50%;
+}
+
+.dropdown-button {
+  background-color: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  background-color: none;
+  text-decoration: none;
+  list-style-type: none;
+  margin-bottom: 50px;
+}
+
+.pagination .page-item {
+  padding: 5px 1.5rem;
+  background-color: var(--color-dark-medium);
+  border-radius: 5rem;
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-right: 15px;
+}
+
+.pagination .active {
+  background-color: rgb(99, 99, 99);
+}
+
+.pagination .page-item:hover {
+  background-color: rgb(87, 87, 87);
+  transition-delay:0.1s;
 }

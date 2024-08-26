@@ -9,7 +9,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True,null=True)
     bio = models.TextField(null=True)
 
-    avatar = models.ImageField(null=True, default="avatar.svg")
+    avatar = models.ImageField(null=True, default="images/default-avatar.png")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -65,3 +65,10 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+    
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_is_following")
+    user_follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_is_being_followed")
+
+    def __str__(self):
+        return f"{self.user} is following {self.user_follower}"

@@ -7,11 +7,12 @@ urlpatterns = [
     path('logout/', views.logoutUser, name="logout"),
     path('register/', views.registerPage, name="register"),
 
+
+    path('unfollow', views.unfollow, name="unfollow"),
+    path('follow', views.follow, name="follow"),
+
     path('', views.home, name="home"),
     path('room/<str:pk>/', views.room, name="room"),
-    path('room-meeting/<str:pk>/', views.roomMeeting, name="room-meeting"),
-    path('meeting/', views.videocall, name="meeting"),
-
 
     path('profile<str:pk>/', views.userProfile, name="user-profile"),
     

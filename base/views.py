@@ -1,22 +1,18 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db.models import Q
-from .models import Room, Topic, Message, User, RoomMeeting
+from .models import Room, Topic, Message, User, Follow
 from .forms import RoomForm, UserForm, MyUserCreationForm
 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from django.contrib.auth.decorators import login_required
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-# Create your views here
-
-#rooms = [
-#    {'id': 1, 'name': 'Lets learn python!'},
-#    {'id': 2, 'name': 'Design with me!'},
-#    {'id': 3, 'name': 'Frontend developers!'},
-#]
+from django.core.paginator import Paginator
 
 def loginPage(request):
 
@@ -30,7 +26,7 @@ def loginPage(request):
         password = request.POST.get('password')
 
         try:
-            user = User.objects.get(uemail=email)
+            user = User.objects.get(email=email)
         except:
             messages.error(request, 'User does not exist')
 
@@ -66,7 +62,8 @@ def registerPage(request):
         else:
             messages.error(request, 'An Error occurred during registration!')
 
-    return render(request, 'base/login_register.html', {'form': form})
+    context = {'form': form}
+    return render(request, 'base/login_register.html', context)
 
 def home(request):
     if request.GET.get('q') != None:
@@ -83,10 +80,14 @@ def home(request):
     topics = Topic.objects.all()[0:5]
 
     room_count = rooms.count()
-    room_messages = Message.objects.all().filter(Q(room__topic__name__icontains=q))
+    room_messages = Message.objects.all().filter(Q(room__topic__name__icontains=q)).order_by('-created')[:9]
 
+    # Paginator
+    paginator = Paginator(rooms, 7)
+    page_number = request.GET.get('page')
+    rooms_of_the_page = paginator.get_page(page_number)
 
-    context = {'rooms': rooms, 'topics': topics, 'room_count':room_count, 'room_messages': room_messages}
+    context = {'rooms': rooms, 'topics': topics, 'room_count':room_count, 'room_messages': room_messages, 'rooms_of_the_page': rooms_of_the_page}
     return render(request, 'base/home.html', context)
 
 def room(request, pk):
@@ -98,6 +99,10 @@ def room(request, pk):
     participants = room.participants.all()
 
     if request.method == 'POST':
+        if request.POST.get('body', '').strip() == "":
+            context = {'room': room, 'room_messages': room_messages, 'participants': participants}
+            return render(request, 'base/room.html', context)
+
         message = Message.objects.create(
             user= request.user,
             room=room,
@@ -112,24 +117,44 @@ def room(request, pk):
 
     return render(request, 'base/room.html', context)
 
-def roomMeeting(request, pk):
-    
-    room_meeting = RoomMeeting.objects.get(id=pk)
-
-    participants = room_meeting.participants.all()
-
-    context = {'room_meeting': room_meeting, 'participants': participants}
-
-     
-    return render(request, 'base/room-meeting.html', context)
-
 def userProfile(request, pk):
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
-    room_messages = user.message_set.all()
+    room_messages = user.message_set.all().order_by('-created')[:5]
     topics = Topic.objects.all()
-    context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
+
+    following = Follow.objects.filter(user=user)
+    followers = Follow.objects.filter(user_follower = user)
+
+    try:
+        checkFollow = followers.filter(user=User.objects.get(pk=request.user.id))
+        if len(checkFollow) != 0:
+            isFollowing = True
+        else:
+            isFollowing = False
+    except:
+        isFollowing = False       
+
+    context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics, 'following': following, 'followers': followers, 'isFollowing': isFollowing, 'user_profile': user}
     return render(request, 'base/profile.html', context)
+
+def follow(request):
+    userfollow = request.POST['userfollow']
+    currentUser = User.objects.get(pk=request.user.id)
+    userfollowData = User.objects.get(id=userfollow)
+    f = Follow(user=currentUser, user_follower=userfollowData)
+    f.save()
+    user_id = userfollowData.id
+    return HttpResponseRedirect(reverse('userProfile', kwargs={'pk': user_id}))
+
+def unfollow(request):
+    userfollow = request.POST['userfollow']
+    currentUser = User.objects.get(pk=request.user.id)
+    userfollowData = User.objects.get(id=userfollow)
+    f = Follow.objects.get(user=currentUser, user_follower=userfollowData)
+    f.delete()
+    user_id = userfollowData.id
+    return HttpResponseRedirect(reverse('userProfile', kwargs={'pk': user_id}))
 
 @login_required(login_url='login')
 def createRoom(request):

@@ -1,4 +1,4 @@
-{% for room in rooms_of_the_page %}
+{% for room in rooms %}
 <div class="roomListRoom">
     <div class="roomListRoom__header">
       <a href="{% url 'user-profile' room.host.id %}" class="roomListRoom__author">
@@ -38,21 +38,3 @@
 </div>
 {% endfor %}
 
-<!-- Paginator -->
-<nav aria-label="Page navigation example">
-  <ul class="pagination d-flex justify-content-center text-">
-    {% if rooms_of_the_page.has_previous %}
-      <li class="page-item"><a class="page-link" href="?page={{rooms_of_the_page.previous_page_number}}">Previous</a></li>
-    {% endif %}
-    {% for num_page in rooms_of_the_page.paginator.page_range %}
-      {% if rooms_of_the_page.number == num_page %}
-        <li class="page-item active"><a class="page-link" href="{% url 'home'%}?page={{num_page}}">{{num_page}}</a></li>
-      {% else %}
-        <li class="page-item"><a class="page-link" href="{% url 'home'%}?page={{num_page}}">{{num_page}}</a></li>
-      {% endif %}
-    {% endfor %}
-    {% if rooms_of_the_page.has_next %}
-      <li class="page-item"><a class="page-link" href="?page={{rooms_of_the_page.next_page_number}}">Next</a></li>
-    {% endif %}
-  </ul>
-</nav>
